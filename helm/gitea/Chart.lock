@@ -1,0 +1,6 @@
+dependencies:
+- name: gitea
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 1.0.2
+digest: sha256:4ea6a703025b0f9c90a72f5836d1d6b5c69a5495c6394fb82a060d4c610f9693
+generated: "2023-10-06T08:36:28.248695+02:00"

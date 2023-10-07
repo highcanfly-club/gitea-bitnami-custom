@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitea-logo-configmap
+binaryData:
+  logo.svg: {{ .Values.gitea.logosvg }}
+  logo.png: {{ .Values.gitea.logopng }}
+  favicon.png: {{ .Values.gitea.faviconpng }}
+  avatar_default.png: {{ .Values.gitea.faviconpng }}
+  apple-touch-icon.png: {{ .Values.gitea.faviconpng }}
