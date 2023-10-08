@@ -8,7 +8,7 @@ kubectl create namespace $NAMESPACE
 echo "CURRENT KANIKO POD is kaniko-$BAD_RANDOM"
 kubectl -n $NAMESPACE delete pod --wait=false $KANIKO_POD 2>/dev/null
 tar -cv --exclude "node_modules" --exclude "dkim.rsa" --exclude "private" --exclude "k8s" --exclude ".git" --exclude ".github" --exclude-vcs --exclude ".docker" --exclude "_sensitive_datas" -f - \
-  ./Dockerfile libgitea.sh gitea-env.sh | gzip -9 | kubectl run -n $NAMESPACE kaniko-$BAD_RANDOM \
+  ./Dockerfile libgitea.sh gitea-env.sh ./busybox autobackup.sh | gzip -9 | kubectl run -n $NAMESPACE kaniko-$BAD_RANDOM \
   --rm --stdin=true \
   --image=highcanfly/kaniko:latest --restart=Never \
   --overrides='{
@@ -31,7 +31,7 @@ tar -cv --exclude "node_modules" --exclude "dkim.rsa" --exclude "private" --excl
           "--push-retry=3",
           "--cache=true",
           "--cache-ttl=24h",
-          "--cache-repo='$DOCKER_REGISTRY-cache'"
+          "--cache-repo='$DOCKER_CACHE_REGISTRY'"
         ]
       }
     ],
