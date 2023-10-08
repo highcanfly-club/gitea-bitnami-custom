@@ -6,5 +6,6 @@ binaryData:
   logo.svg: {{ .Values.gitea.logosvg }}
   logo.png: {{ .Values.gitea.logopng }}
   favicon.png: {{ .Values.gitea.faviconpng }}
+  favicon.svg: {{ .Values.gitea.logosvg }}
   avatar_default.png: {{ .Values.gitea.faviconpng }}
   apple-touch-icon.png: {{ .Values.gitea.faviconpng }}
