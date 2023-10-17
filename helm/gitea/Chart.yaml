@@ -29,4 +29,7 @@ sources:
 dependencies:
 - name: gitea
   version: 1.0.2
-  repository: oci://registry-1.docker.io/bitnamicharts
+  repository: https://charts.bitnami.com/bitnami
+- name: redis
+  version: 18.1.0
+  repository: https://charts.bitnami.com/bitnami

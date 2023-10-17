@@ -1,6 +1,9 @@
 dependencies:
 - name: gitea
-  repository: oci://registry-1.docker.io/bitnamicharts
+  repository: https://charts.bitnami.com/bitnami
   version: 1.0.2
-digest: sha256:4ea6a703025b0f9c90a72f5836d1d6b5c69a5495c6394fb82a060d4c610f9693
-generated: "2023-10-06T08:36:28.248695+02:00"
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 18.1.0
+digest: sha256:75f8fa1770b5bfc30cd75315bd81261b3204e6ee071270fce69a8e52646a0a66
+generated: "2023-10-17T08:23:10.960313+02:00"

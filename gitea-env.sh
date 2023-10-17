@@ -58,6 +58,10 @@ gitea_env_vars=(
     GITEA_SMTP_USER
     GITEA_SMTP_PASSWORD
     GITEA_DISABLE_REGISTRATION
+    GITEA_REDIS
+    GITEA_REDIS_PORT
+    GITEA_REDIS_SERVER
+    GITEA_SESSION_PROVIDER_CONFIG
 )
 for env_var in "${gitea_env_vars[@]}"; do
     file_env_var="${env_var}_FILE"
@@ -122,6 +126,14 @@ export GITEA_SMTP_FROM="${GITEA_SMTP_FROM:-}"
 export GITEA_SMTP_USER="${GITEA_SMTP_USER:-}"
 export GITEA_SMTP_PASSWORD="${GITEA_SMTP_PASSWORD:-}"
 export GITEA_DISABLE_REGISTRATION="${GITEA_DISABLE_REGISTRATION:-false}"
+export GITEA_REDIS="${GITEA_REDIS:-false}"
+export GITEA_REDIS_PORT="${GITEA_REDIS_PORT:-6379}"
+export GITEA_REDIS_SERVER="${GITEA_REDIS_SERVER:-redis-master}"
+if [ ${GITEA_REDIS} == "false" ]; then
+    export GITEA_SESSION_PROVIDER_CONFIG="${GITEA_SESSION_PROVIDER_CONFIG:-${GITEA_DATA_DIR}/sessions}"
+else
+    export GITEA_SESSION_PROVIDER_CONFIG="redis://${GITEA_REDIS_SERVER}:${GITEA_REDIS_PORT}/1"
+fi
 # Gitea system parameters
 export GITEA_DAEMON_USER="gitea"
 export GITEA_DAEMON_GROUP="gitea"

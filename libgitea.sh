@@ -143,6 +143,7 @@ gitea_initialize() {
         # In addition, Gitea overwrites these values after passing the wizard, so we need to set them afterwards anyways
         is_empty_value "$GITEA_LOG_MODE" || gitea_conf_set "log" "MODE" "$GITEA_LOG_MODE"
         is_empty_value "$GITEA_LOG_ROUTER" || gitea_conf_set "log" "ROUTER" "$GITEA_LOG_ROUTER"
+        gitea_use_redis_in_conf_file
         info "Persisting Gitea installation"
         persist_app "$app_name" "$GITEA_DATA_TO_PERSIST"
     else
@@ -220,6 +221,29 @@ gitea_update_conf_file() {
     is_empty_value "$GITEA_LFS_ROOT_PATH" || gitea_conf_set "lfs" "PATH" "$GITEA_LFS_ROOT_PATH"
 
     gitea_conf_set "service" "DISABLE_REGISTRATION" "$GITEA_DISABLE_REGISTRATION"
+
+    gitea_use_redis_in_conf_file
+}
+
+########################
+# Update the Gitea configuration file with REDIS specific configs
+# Globals:
+#   GITEA_*
+# Arguments:
+#   None
+# Returns:
+#   None
+#########################
+gitea_use_redis_in_conf_file() {
+    if is_boolean_yes "${GITEA_REDIS}"; then
+         gitea_conf_set "queue" "TYPE" "redis"
+         gitea_conf_set "queue" "CONN_STR" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/0"
+         gitea_conf_set "session" "PROVIDER" "redis"
+         gitea_conf_set "session" "PROVIDER_CONFIG" "${GITEA_SESSION_PROVIDER_CONFIG}"
+         gitea_conf_set "cache" "ENABLED" "true"
+         gitea_conf_set "cache" "ADAPTER" "redis"
+         gitea_conf_set "cache" "HOST" ""redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/2""
+    fi
 }
 
 ########################

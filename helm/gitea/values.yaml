@@ -57,6 +57,8 @@ gitea:
       value: gitea.example.org
     - name: GITEA_LFS_START_SERVER
       value: "true"
+    - name: GITEA_REDIS
+      value: "true"
   extraVolumes:
     - name: "logo-svg"
       configMap:
@@ -70,3 +72,12 @@ gitea:
   postgresql:
     auth:
       password: d6fe3f4eb467a197e25298ef66c6701c726922cb
+
+redis:
+  fullnameOverride: redis
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
