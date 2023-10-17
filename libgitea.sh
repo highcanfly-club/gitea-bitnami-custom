@@ -237,6 +237,7 @@ gitea_update_conf_file() {
 gitea_use_redis_in_conf_file() {
     if is_boolean_yes "${GITEA_REDIS}"; then
          gitea_conf_set "queue" "TYPE" "redis"
+         gitea_conf_set "queue.issue_indexer" "TYPE" "redis"
          gitea_conf_set "queue" "CONN_STR" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/0"
          gitea_conf_set "session" "PROVIDER" "redis"
          gitea_conf_set "session" "PROVIDER_CONFIG" "${GITEA_SESSION_PROVIDER_CONFIG}"
