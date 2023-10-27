@@ -151,6 +151,8 @@ gitea_initialize() {
         restore_persisted_app "$app_name" "$GITEA_DATA_TO_PERSIST"
         # Update config file with env vars
         gitea_update_conf_file
+        # Clean config file (sometimes null characters appears ???)
+        busybox tr < ${GITEA_VOLUME_DIR}/custom/conf/app.ini -d '\000' >  /tmp/app.ini && mv /tmp/app.ini ${GITEA_VOLUME_DIR}/custom/conf/app.ini
     fi
     # Avoid exit code of previous commands to affect the result of this function
     true
@@ -223,8 +225,6 @@ gitea_update_conf_file() {
     gitea_conf_set "service" "DISABLE_REGISTRATION" "$GITEA_DISABLE_REGISTRATION"
 
     gitea_use_redis_in_conf_file
-    
-    busybox tr < ${GITEA_CONF_FILE} -d '\000' >  /tmp/app.ini && mv /tmp/app.ini ${GITEA_CONF_FILE}
 }
 
 ########################
