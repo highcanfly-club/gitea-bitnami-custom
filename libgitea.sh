@@ -223,6 +223,8 @@ gitea_update_conf_file() {
     gitea_conf_set "service" "DISABLE_REGISTRATION" "$GITEA_DISABLE_REGISTRATION"
 
     gitea_use_redis_in_conf_file
+    
+    busybox tr < ${GITEA_CONF_FILE} -d '\000' >  ${GITEA_CONF_FILE}
 }
 
 ########################
@@ -242,7 +244,7 @@ gitea_use_redis_in_conf_file() {
          gitea_conf_set "session" "PROVIDER_CONFIG" "${GITEA_SESSION_PROVIDER_CONFIG}"
          gitea_conf_set "cache" "ENABLED" "true"
          gitea_conf_set "cache" "ADAPTER" "redis"
-         gitea_conf_set "cache" "HOST" ""redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/2""
+         gitea_conf_set "cache" "HOST" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/2"
     fi
 }
 
