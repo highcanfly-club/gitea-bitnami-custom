@@ -224,7 +224,7 @@ gitea_update_conf_file() {
 
     gitea_use_redis_in_conf_file
     
-    busybox tr < ${GITEA_CONF_FILE} -d '\000' >  ${GITEA_CONF_FILE}
+    busybox tr < ${GITEA_CONF_FILE} -d '\000' >  /tmp/app.ini && mv /tmp/app.ini ${GITEA_CONF_FILE}
 }
 
 ########################
