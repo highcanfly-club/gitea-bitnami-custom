@@ -89,3 +89,27 @@ redis:
   master:
     persistence:
       enabled: false
+
+pgadmin:
+  adminEmail: admin@chart-example.local
+  enabled: false
+  service:
+    type: ClusterIP
+    port: 80
+  ingress:
+    enabled: true
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+  autoscaling:
+    enabled: false
+  image:
+    repository: dpage/pgadmin4
+    pullPolicy: Always
+    tag: "7"
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
