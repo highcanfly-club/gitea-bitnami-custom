@@ -113,3 +113,15 @@ pgadmin:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
+
+cloudflared:
+  enabled: false
+  autoscaling:
+    enabled: false
+  image:
+    repository: cloudflare/cloudflared
+    pullPolicy: Always
+    tag: latest
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""

@@ -10,7 +10,7 @@ metadata:
 spec:
   gatewayClassName: {{ .Values.gitea.gateway.gatewayClassName }}
   listeners:
-  - name: ssh
+  - name: {{ printf "%s-%s-ssh" .Release.Namespace .Release.Name | trunc 63 }}
     protocol: TCP
     port: {{ .Values.gitea.service.ports.ssh }}
     allowedRoutes:

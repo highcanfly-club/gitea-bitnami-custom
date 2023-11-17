@@ -1,0 +1,50 @@
+{{ if .Values.cloudflared.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+spec:
+  {{- if not .Values.cloudflared.autoscaling.enabled }}
+  replicas: {{ .Values.cloudflared.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      {{- with .Values.cloudflared.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: cloudflared
+    spec:
+      {{- with .Values.cloudflared.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.cloudflared.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.cloudflared.securityContext | nindent 12 }}
+          image: "{{ .Values.cloudflared.image.repository }}:{{ .Values.cloudflared.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.cloudflared.image.pullPolicy }}
+          command: ["cloudflared"]
+          args: ["tunnel", "run", "--token", {{ .Values.cloudflared.token | required "Cloudflared token is required" }}]
+          resources:
+            {{- toYaml .Values.cloudflared.resources | nindent 12 }}
+      {{- with .Values.cloudflared.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cloudflared.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cloudflared.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{ end }}
