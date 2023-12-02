@@ -46,34 +46,34 @@ gitea:
       memory: 128Mi
       cpu: 500m
   extraEnvVars:
-    - name: GITEA_SMTP_ENABLED
-      value: "false"
-    - name: GITEA_CUSTOM
-      value: /opt/bitnami/gitea/custom
-    - name: GITEA_SMTP_FROM
-      value: "no-reply-gitea@sctg.eu.org"
-    - name: BACKUP_FROM
-      value: "backup-gitea@example.org"
-    - name: BACKUP_TO
-      value: "admin@example.org"
-    - name: FQDN
-      value: gitea.example.org
-    - name: GITEA_LFS_START_SERVER
-      value: "true"
-    - name: GITEA_REDIS
-      value: "true"
+  - name: GITEA_SMTP_ENABLED
+    value: "false"
+  - name: GITEA_CUSTOM
+    value: /opt/bitnami/gitea/custom
+  - name: GITEA_SMTP_FROM
+    value: "no-reply-gitea@sctg.eu.org"
+  - name: BACKUP_FROM
+    value: "backup-gitea@example.org"
+  - name: BACKUP_TO
+    value: "admin@example.org"
+  - name: FQDN
+    value: gitea.example.org
+  - name: GITEA_LFS_START_SERVER
+    value: "true"
+  - name: GITEA_REDIS
+    value: "true"
   extraVolumes:
-    - name: "logo-svg"
-      configMap:
-        name: gitea-logo-configmap
-    - name: "templates"
-      configMap:
-        name: gitea-templates-configmap
+  - name: "logo-svg"
+    configMap:
+      name: gitea-logo-configmap
+  - name: "templates"
+    configMap:
+      name: gitea-templates-configmap
   extraVolumeMounts:
-    - name: "logo-svg"
-      mountPath: /opt/bitnami/gitea/custom/public/img
-    - name: "templates"
-      mountPath: /opt/bitnami/gitea/custom/templates
+  - name: "logo-svg"
+    mountPath: /opt/bitnami/gitea/custom/public/assets/img
+  - name: "templates"
+    mountPath: /opt/bitnami/gitea/custom/templates
   updateStrategy:
     type: Recreate
     rollingUpdate: null
@@ -99,10 +99,10 @@ pgadmin:
   ingress:
     enabled: true
     hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+    - host: chart-example.local
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
     tls: []
   autoscaling:
     enabled: false
