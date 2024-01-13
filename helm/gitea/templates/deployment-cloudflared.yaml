@@ -48,13 +48,15 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.cloudflared.resources | nindent 12 }}
+          {{- if .Values.cloudflared.probe.enabled }}
           livenessProbe:
             httpGet:
               path: /ready
               port: 2000
             failureThreshold: 1
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30
             periodSeconds: 10
+          {{- end }}
           volumeMounts:
             - name: creds
               mountPath: /etc/cloudflared/creds

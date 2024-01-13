@@ -169,9 +169,11 @@ cloudflared:
   autoscaling:
     enabled: false
   image:
-    repository: cloudflare/cloudflared
+    repository: highcanfly/net-tools
     pullPolicy: Always
-    tag: latest
+    tag: 1.2.1
+  probe:
+    enabled: true
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
