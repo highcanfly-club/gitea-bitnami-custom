@@ -177,3 +177,17 @@ cloudflared:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
+
+getlaserfile:
+  repolocation: /lasersmart/
+  ihmlocation: builds/IHM/ihm.exe
+  startuplocation: builds/sbRIO-9651/home/lvuser/natinst/bin/startup.rtexe
+  port: "80"
+  ingress:
+    enabled: true
+    hosts:
+    - host: distrib.chart-example.local
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+    tls: [] 

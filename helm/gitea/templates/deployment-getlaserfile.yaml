@@ -1,0 +1,68 @@
+{{ if .Values.getlaserfile.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: getlaserfile
+spec:
+  {{- if not .Values.getlaserfile.autoscaling.enabled }}
+  replicas: {{ .Values.getlaserfile.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: getlaserfile
+  template:
+    metadata:
+      {{- with .Values.getlaserfile.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: getlaserfile
+    spec:
+      {{- with .Values.getlaserfile.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.getlaserfile.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.getlaserfile.securityContext | nindent 12 }}
+          image: "{{ .Values.getlaserfile.image.repository | default eltorio/getlaserfile }}:{{ .Values.getlaserfile.image.tag | default latest }}"
+          imagePullPolicy: {{ .Values.getlaserfile.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.getlaserfile.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.getlaserfile.resources | nindent 12 }}
+          env:
+            - name: REPOLOCATION
+              value: {{ .Values.getlaserfile.repolocation }}
+            - name: IHMLOCATION
+              value: {{ .Values.getlaserfile.ihmlocation }}
+            - name: STARTUPLOCATION
+              value: {{ .Values.getlaserfile.startuplocation }}
+            - name: PORT
+              value: {{ .Values.getlaserfile.port }}
+          volumeMounts:
+            - name: repo
+              mountPath: /repo
+      volumes:
+      - name: repo
+        persistentVolumeClaim:
+            claimName: gitea
+      {{- with .Values.getlaserfile.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.getlaserfile.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.getlaserfile.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{ end }}
