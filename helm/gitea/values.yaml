@@ -179,6 +179,7 @@ cloudflared:
   fullnameOverride: ""
 
 getlaserfile:
+  enabled: false
   repolocation: /lasersmart/
   ihmlocation: builds/IHM/ihm.exe
   startuplocation: builds/sbRIO-9651/home/lvuser/natinst/bin/startup.rtexe
