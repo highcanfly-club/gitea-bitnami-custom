@@ -179,11 +179,25 @@ cloudflared:
   fullnameOverride: ""
 
 getlaserfile:
+  image:
+    repository: "eltorio/getlaserfile"
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
   enabled: false
-  repolocation: /lasersmart/
-  ihmlocation: builds/IHM/ihm.exe
-  startuplocation: builds/sbRIO-9651/home/lvuser/natinst/bin/startup.rtexe
-  port: "80"
+  autoscaling: 
+    enabled: false
+  probe:
+    enabled: true
+  config: |
+        paths:
+        - repolocation: "/repo1"
+          url: "/url1"
+          path: "/path1"
+        - repolocation: "/repo2"
+          url: "/url2"
+          path: "/path2"
   ingress:
     enabled: true
     hosts:

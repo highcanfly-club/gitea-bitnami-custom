@@ -26,10 +26,13 @@ spec:
       securityContext:
         {{- toYaml .Values.getlaserfile.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-getlaserfile
+          {{- if .Values.getlaserfile.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.getlaserfile.command "context" $) | nindent 12 }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.getlaserfile.securityContext | nindent 12 }}
-          image: "{{ .Values.getlaserfile.image.repository | default eltorio/getlaserfile }}:{{ .Values.getlaserfile.image.tag | default latest }}"
+          image: "{{ .Values.getlaserfile.image.repository }}:{{ .Values.getlaserfile.image.tag }}"
           imagePullPolicy: {{ .Values.getlaserfile.image.pullPolicy }}
           ports:
             - name: http
@@ -37,22 +40,35 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.getlaserfile.resources | nindent 12 }}
+          {{- if .Values.getlaserfile.probe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.getlaserfile.service.port }}
+            failureThreshold: 1
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          {{- end }}
           env:
-            - name: REPOLOCATION
-              value: {{ .Values.getlaserfile.repolocation }}
-            - name: IHMLOCATION
-              value: {{ .Values.getlaserfile.ihmlocation }}
-            - name: STARTUPLOCATION
-              value: {{ .Values.getlaserfile.startuplocation }}
+            - name: CONFIGLOCATION
+              value: /etc/getlaserfile/config.yaml
             - name: PORT
-              value: {{ .Values.getlaserfile.port }}
+              value: {{ .Values.getlaserfile.service.port | quote }}
           volumeMounts:
             - name: repo
               mountPath: /repo
+            - name: getlaserfile-config
+              mountPath: /etc/getlaserfile
       volumes:
       - name: repo
         persistentVolumeClaim:
             claimName: gitea
+      - name: getlaserfile-config
+        configMap:
+          name: getlaserfile-configmap
+          items:
+          - key: config.yaml
+            path: config.yaml
       {{- with .Values.getlaserfile.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

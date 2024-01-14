@@ -1,0 +1,8 @@
+{{ if .Values.cloudflared.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: getlaserfile-configmap
+data:
+  config.yaml: {{ .Values.getlaserfile.config | toYaml | indent 2}}
+{{ end }}
