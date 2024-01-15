@@ -20,6 +20,16 @@ spec:
     spec:
       containers:
       - env:
+        {{- if .Values.smtpd.tls.secret }}
+        - name: POSTFIX_smtp_use_tls
+          value: "yes"
+        - name: POSTFIX_smtp_tls_cert_file
+          value: "/etc/cert/tls.crt"
+        - name: POSTFIX_smtp_tls_key_file
+          value: "/etc/cert/tls.key"
+        - name: POSTFIX_smtp_tls_loglevel
+          value: "1"
+        {{ end }}
         - name: ALLOWED_SENDER_DOMAINS
           valueFrom:
             secretKeyRef:
@@ -75,6 +85,14 @@ spec:
         - name: RELAYHOST
           value: {{ .Values.smtpd.relayHost | quote }}
         {{ end }}
+        {{ if .Values.smtpd.relayHostUser }}
+        - name: RELAYHOST_USERNAME 
+          value: {{ .Values.smtpd.relayHostUser | quote }}
+        {{ end }}
+        {{ if .Values.smtpd.relayHostPassword }}
+        - name: RELAYHOST_PASSWORD 
+          value: {{ .Values.smtpd.relayHostPassword | quote }}
+        {{ end }}
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ .Values.kubernetesClusterDomain }}
         image: {{ .Values.smtpd.image.repository }}:{{ .Values.smtpd.image.tag | default .Chart.AppVersion }}
@@ -82,5 +100,17 @@ spec:
         ports:
         - containerPort: 25
         resources: {{- toYaml .Values.smtpd.resources | nindent 10 }}
+        {{- if .Values.smtpd.tls.secret }}
+        volumeMounts:
+          - mountPath: "/etc/cert"
+            name: crt-key
+            readOnly: true
+        {{- end}}
+      {{- if .Values.smtpd.tls.secret }}
+      volumes:
+        - name: crt-key
+          secret:
+            secretName: {{ .Values.smtpd.tls.secret }}
+      {{ end }}
       imagePullSecrets: {{ .Values.imagePullSecrets | default list | toJson }}
       restartPolicy: Always
