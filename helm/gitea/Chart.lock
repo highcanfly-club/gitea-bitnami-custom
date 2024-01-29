@@ -5,5 +5,8 @@ dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 18.2.0
-digest: sha256:ac6d171d0f97dc4bf4a2af31e1d6be3e658f1fc9ec47a631474b8513f5a6a813
-generated: "2023-10-27T18:06:31.890159+02:00"
+- name: flex-smtpd
+  repository: https://helm-repo.highcanfly.club
+  version: 0.1.6
+digest: sha256:6c1d0d027a380ea3720742616b17ade1dfc5afc075dad38bcdf13b89357daced
+generated: "2024-01-29T08:29:49.174143+01:00"
