@@ -99,6 +99,27 @@ gitea_stop() {
 }
 
 ########################
+# Checks whether a directory is empty or not
+# arguments:
+#   $1 - directory
+# returns:
+#   boolean
+#########################
+is_dir_empty() {
+    local -r path="${1:?missing directory}"
+    # Calculate real path in order to avoid issues with symlinks
+    local -r dir="$(realpath "$path")"
+    # This condition checks if the directory specified by "$dir" does not exist or is empty, except for a possible '.app.ini.lock' file.
+    # [[ ! -e "$dir" ]] checks if the directory "$dir" does not exist.
+    # [[ -z "$(find "$dir" -mindepth 1 -not -name '.app.ini.lock')" ]] checks if the directory "$dir" is empty or only contains the '.app.ini.lock' file.
+    if [[ ! -e "$dir" ]] || [[ -z "$(find "$dir" -mindepth 1 -not -name '.app.ini.lock')" ]] ; then
+        true
+    else
+        false
+    fi
+}
+
+########################
 # Initialize Gitea
 # Arguments:
 #   None

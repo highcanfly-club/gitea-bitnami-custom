@@ -32,6 +32,6 @@ RUN ln -svf /bin/busybox /usr/sbin/sendmail \
     && chmod ugo+x /usr/local/bin/autobackup 
 COPY --from=dcronbuilder /opt/bitnami/gitea/dcron/crond /usr/sbin/crond
 RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d && chmod 0755 /usr/sbin/crond
-
+COPY --chmod=0755 entrypoint.sh /opt/bitnami/scripts/gitea/entrypoint.sh
 WORKDIR /opt/bitnami/gitea
 USER 1001

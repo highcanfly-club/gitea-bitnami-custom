@@ -8,11 +8,13 @@ flex-smtpd:
     dkimSelector: dkim-gitea
     postfixHostname: smtp-gitea.sandbox.local
   image:
-    tag: v4.1.0f
+    tag: v4.1.0g
   service:
     name: smtpd
 
 gitea:
+  nodeSelector:
+    kubernetes.io/arch: amd64
   resources:
     limits:
       cpu: 2000m
@@ -32,12 +34,12 @@ gitea:
     enabled: true
     gatewayClassName: haproxy-gatewayclass
   image:
-    tag: 1.21.3
-    debug: true
-  replicaCount: 1
+    tag: 1.21.4
+    debug: false
+  replicaCount: 3
   persistence:
-    enabled: false
-    size: 10Gi
+    enabled: true
+    size: 25Mi
     accessModes: ["ReadWriteMany"]
   ingress:
     annotations:
