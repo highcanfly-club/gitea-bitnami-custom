@@ -112,7 +112,7 @@ is_dir_empty() {
     # This condition checks if the directory specified by "$dir" does not exist or is empty, except for a possible '.app.ini.lock' file.
     # [[ ! -e "$dir" ]] checks if the directory "$dir" does not exist.
     # [[ -z "$(find "$dir" -mindepth 1 -not -name '.app.ini.lock')" ]] checks if the directory "$dir" is empty or only contains the '.app.ini.lock' file.
-    if [[ ! -e "$dir" ]] || [[ -z "$(find "$dir" -mindepth 1 -not -name '.app.ini.lock')" ]] ; then
+    if [[ ! -e "$dir" ]] || [[ -z "$(find "$dir" -mindepth 1 -maxdepth 1 -not -name '.app.ini.lock' -not -name 'lost+found')" ]] ; then
         true
     else
         false

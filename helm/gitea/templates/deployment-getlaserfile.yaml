@@ -62,7 +62,7 @@ spec:
       volumes:
       - name: repo
         persistentVolumeClaim:
-            claimName: gitea
+            claimName: {{ .Values.gitea.persistence.existingClaim | default (print (include "common.names.fullname" .)) }}
       - name: getlaserfile-config
         configMap:
           name: getlaserfile-configmap
