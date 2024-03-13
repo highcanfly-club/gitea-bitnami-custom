@@ -112,7 +112,7 @@ is_dir_empty() {
     # This condition checks if the directory specified by "$dir" does not exist or is empty, except for a possible '.app.ini.lock' file.
     # [[ ! -e "$dir" ]] checks if the directory "$dir" does not exist.
     # [[ -z "$(find "$dir" -mindepth 1 -not -name '.app.ini.lock')" ]] checks if the directory "$dir" is empty or only contains the '.app.ini.lock' file.
-    if [[ ! -e "$dir" ]] || [[ -z "$(find "$dir" -mindepth 1 -maxdepth 1 -not -name '.app.ini.lock' -not -name 'lost+found')" ]] ; then
+    if [[ ! -e "$dir" ]] || [[ -z "$(find "$dir" -mindepth 1 -maxdepth 1 -not -name '.app.ini.lock' -not -name 'lost+found')" ]]; then
         true
     else
         false
@@ -167,7 +167,9 @@ gitea_initialize() {
         gitea_use_redis_in_conf_file
         if is_boolean_yes "$GITEA_INIT_FROM_S3"; then
             info "Restoring Gitea installation from S3"
-            /opt/bitnami/scripts/initfrom-s3.sh
+            health --httpPort=${GITEA_HTTP_PORT=3000} &
+                /opt/bitnami/scripts/initfrom-s3.sh
+            kill %1
         fi
         info "Persisting Gitea installation"
         persist_app "$app_name" "$GITEA_DATA_TO_PERSIST"
@@ -177,7 +179,7 @@ gitea_initialize() {
         # Update config file with env vars
         gitea_update_conf_file
         # Clean config file (sometimes null characters appears ???)
-        busybox tr < ${GITEA_VOLUME_DIR}/custom/conf/app.ini -d '\000' >  /tmp/app.ini && mv /tmp/app.ini ${GITEA_VOLUME_DIR}/custom/conf/app.ini
+        busybox tr -d '\000' <${GITEA_VOLUME_DIR}/custom/conf/app.ini >/tmp/app.ini && mv /tmp/app.ini ${GITEA_VOLUME_DIR}/custom/conf/app.ini
     fi
     # Avoid exit code of previous commands to affect the result of this function
     true
@@ -263,13 +265,13 @@ gitea_update_conf_file() {
 #########################
 gitea_use_redis_in_conf_file() {
     if is_boolean_yes "${GITEA_REDIS}"; then
-         gitea_conf_set "queue" "TYPE" "redis"
-         gitea_conf_set "queue" "CONN_STR" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/0"
-         gitea_conf_set "session" "PROVIDER" "redis"
-         gitea_conf_set "session" "PROVIDER_CONFIG" "${GITEA_SESSION_PROVIDER_CONFIG}"
-         gitea_conf_set "cache" "ENABLED" "true"
-         gitea_conf_set "cache" "ADAPTER" "redis"
-         gitea_conf_set "cache" "HOST" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/2"
+        gitea_conf_set "queue" "TYPE" "redis"
+        gitea_conf_set "queue" "CONN_STR" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/0"
+        gitea_conf_set "session" "PROVIDER" "redis"
+        gitea_conf_set "session" "PROVIDER_CONFIG" "${GITEA_SESSION_PROVIDER_CONFIG}"
+        gitea_conf_set "cache" "ENABLED" "true"
+        gitea_conf_set "cache" "ADAPTER" "redis"
+        gitea_conf_set "cache" "HOST" "redis://$GITEA_REDIS_SERVER:$GITEA_REDIS_PORT/2"
     fi
 }
 
@@ -347,9 +349,9 @@ gitea_pass_wizard() {
     )
 
     if is_boolean_yes "${GITEA_DISABLE_REGISTRATION}"; then
-         curl_data_opts+=(
+        curl_data_opts+=(
             "--data-urlencode" "disable_registration=on"
-         )
+        )
     fi
     # Note in version 1.18 SMTP configuration is different
     if is_boolean_yes "${GITEA_SMTP_ENABLED}"; then

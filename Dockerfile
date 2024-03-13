@@ -19,6 +19,10 @@ RUN git clone https://github.com/eltorio/dcron.git \
     && make CRONTAB_GROUP=gitea CRONTABS=/tmp/crontabs CRONSTAMPS=/tmp/cronstamps
 RUN curl -L https://dl.min.io/client/mc/release/linux-$(dpkg --print-architecture)/mc > /usr/local/bin/mc && chmod +x /usr/local/bin/mc
 
+FROM golang:1.21 as golangbuilder
+COPY health /health
+RUN cd /health && go build -o /health/health
+
 FROM bitnami/gitea:latest
 USER root
 RUN apt-get update -y && apt install -y --no-install-recommends vim postgresql-client unzip
@@ -36,5 +40,6 @@ RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d && chmod 0755 /usr/sbin/cr
 COPY --chmod=0755 entrypoint.sh /opt/bitnami/scripts/gitea/entrypoint.sh
 COPY --chmod=0755 initfrom-s3.sh /opt/bitnami/scripts/initfrom-s3.sh
 COPY --from=dcronbuilder /usr/local/bin/mc /usr/local/bin/mc
+COPY --from=golangbuilder /health/health /usr/local/bin/health
 WORKDIR /opt/bitnami/gitea
 USER 1001
