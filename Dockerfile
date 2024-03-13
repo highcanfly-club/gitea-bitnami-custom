@@ -17,10 +17,11 @@ RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d
 RUN git clone https://github.com/eltorio/dcron.git \
     && cd dcron \
     && make CRONTAB_GROUP=gitea CRONTABS=/tmp/crontabs CRONSTAMPS=/tmp/cronstamps
+RUN curl -L https://dl.min.io/client/mc/release/linux-$(dpkg --print-architecture)/mc > /usr/local/bin/mc && chmod +x /usr/local/bin/mc
 
 FROM bitnami/gitea:latest
 USER root
-RUN apt-get update -y && apt install -y --no-install-recommends vim
+RUN apt-get update -y && apt install -y --no-install-recommends vim postgresql-client unzip
 RUN mkdir -p /opt/bitnami/custom/public
 COPY --chmod=0755 libgitea.sh /opt/bitnami/scripts/libgitea.sh
 COPY --chmod=0755 gitea-env.sh /opt/bitnami/scripts/gitea-env.sh
@@ -33,5 +34,7 @@ RUN ln -svf /bin/busybox /usr/sbin/sendmail \
 COPY --from=dcronbuilder /opt/bitnami/gitea/dcron/crond /usr/sbin/crond
 RUN mkdir -p /etc/cron.d && chown -R 1001 /etc/cron.d && chmod 0755 /usr/sbin/crond
 COPY --chmod=0755 entrypoint.sh /opt/bitnami/scripts/gitea/entrypoint.sh
+COPY --chmod=0755 initfrom-s3.sh /opt/bitnami/scripts/initfrom-s3.sh
+COPY --from=dcronbuilder /usr/local/bin/mc /usr/local/bin/mc
 WORKDIR /opt/bitnami/gitea
 USER 1001

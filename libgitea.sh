@@ -165,6 +165,10 @@ gitea_initialize() {
         is_empty_value "$GITEA_LOG_MODE" || gitea_conf_set "log" "MODE" "$GITEA_LOG_MODE"
         is_empty_value "$GITEA_LOG_ROUTER" || gitea_conf_set "log" "ROUTER" "$GITEA_LOG_ROUTER"
         gitea_use_redis_in_conf_file
+        if is_boolean_yes "$GITEA_INIT_FROM_S3"; then
+            info "Restoring Gitea installation from S3"
+            /opt/bitnami/scripts/initfrom-s3.sh
+        fi
         info "Persisting Gitea installation"
         persist_app "$app_name" "$GITEA_DATA_TO_PERSIST"
     else
