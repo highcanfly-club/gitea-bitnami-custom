@@ -1,24 +1,24 @@
-smtpd:
-  updateStrategy: RollingUpdate # Recreate | RollingUpdate
-  useCloudflareDDNS: "0"
-  useLetsEncrypt: "0"
-  relayHost: ""
-  ports:
-  - name: "25"
-    port: 25
-    targetPort: 25
-  replicas: 1
+flex-smtpd:
+  service:
+    name: smtpd
+  config:
+    useCloudflareDDNS: "0"
+    useLetsEncrypt: "0"
+    useLetsEncryptStaging: "0"
+    postfixHostname: fake-gitea.example.com
+    allowedSenderDomains: example.com
+    dkimSelector: dkim-selector
+    dkimPrivateKey: "-----BEGIN RSA PRIVATE KEY-----\nFAKE_PRIVATE_KEY\n-----END RSA PRIVATE KEY-----"
+    relayHost: "[fake-smtp.example.com]:587"
+    relayHostUser: "fake-user@example.com"
+    relayHostPassword: "fake-password"
+    certificateIssuer: fake-issuer
+    certificateSecretName: fake-secret-name
+    cloudflareApiKey: fake-api-key
+    cloudflareDnsRecords: fake-dns-record.example.com
+    cloudflareZoneId: "fake-zone-id"
   image:
-    repository: highcanfly/smtp-relay
-    tag: latest
-  resources:
-    limits:
-      cpu: 500m
-      memory: "300Mi"
-    requests:
-      cpu: 10m
-      memory: "30Mi"
-  type: ClusterIP
+    tag: v4.1.0g
 
 
 gitea:
