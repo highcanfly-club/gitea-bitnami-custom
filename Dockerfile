@@ -1,4 +1,4 @@
-FROM bitnami/gitea:latest as busyboxbuilder
+FROM bitnami/gitea:1.21.8 as busyboxbuilder
 USER root
 RUN cd / \
     && apt-get update -y \
@@ -8,7 +8,7 @@ RUN cd / &&  tar -xjvf  busybox-1.36.1.tar.bz2
 COPY busybox/busybox.config /busybox-1.36.1/.config
 RUN cd /busybox-1.36.1/ && make install
 
-FROM bitnami/gitea:latest as dcronbuilder
+FROM bitnami/gitea:1.21.8 as dcronbuilder
 USER root
 RUN cd / \
     && apt-get update -y \
