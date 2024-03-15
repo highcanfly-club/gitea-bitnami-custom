@@ -168,8 +168,9 @@ gitea_initialize() {
         if is_boolean_yes "$GITEA_INIT_FROM_S3"; then
             info "Restoring Gitea installation from S3"
             health --httpPort=${GITEA_HTTP_PORT=3000} &
+            HEALTH_PID=$!
                 /opt/bitnami/scripts/initfrom-s3.sh
-            kill %1
+            kill $HEALTH_PID
         fi
         info "Persisting Gitea installation"
         persist_app "$app_name" "$GITEA_DATA_TO_PERSIST"
