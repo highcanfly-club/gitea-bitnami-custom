@@ -51,8 +51,13 @@ if [[ $- != *i* ]]; then
 
     CP_PID=$!
     while kill -0 $CP_PID 2>/dev/null; do
-        sleep 1
-        echo "Current size: $(du -sh ${BACKUP_DIR}/${LATEST_BACKUP}* | cut -f1)"
+        (du -sh ${BACKUP_DIR}/${LATEST_BACKUP}* | cut -f1) &
+        DU_PID=$!
+        sleep 10
+        if kill -0 $DU_PID 2>/dev/null; then
+            kill $DU_PID
+        fi
+        wait $DU_PID
     done
 else
     mc cp s3backup/${S3_BUCKET}/${S3_PATH}/${LATEST_BACKUP} ${BACKUP_DIR}/${LATEST_BACKUP}
