@@ -1,7 +1,7 @@
 #!/bin/bash
 BACKUP_DIR=/bitnami/gitea/backups
 FILESTORE_DIR=/bitnami/gitea
-export MC_CONFIG_DIR=bitnami/gitea/.mc
+export MC_CONFIG_DIR=/bitnami/gitea/.mc
 
 # test if variables GITEA_DATABASE_HOST, GITEA_DATABASE_NAME, GITEA_DATABASE_USERNAME, GITEA_DATABASE_PASSWORD are set
 if [ -z "${GITEA_DATABASE_HOST}" ] || [ -z "${GITEA_DATABASE_NAME}" ] || [ -z "${GITEA_DATABASE_USERNAME}" ] || [ -z "${GITEA_DATABASE_PASSWORD}" ]; then
@@ -45,7 +45,18 @@ if [ -z "${S3_GITEA_FILE}" ]; then
 else
     LATEST_BACKUP=${S3_GITEA_FILE}
 fi
-mc cp s3backup/${S3_BUCKET}/${S3_PATH}/${LATEST_BACKUP} ${BACKUP_DIR}/${LATEST_BACKUP}
+
+if [[ $- != *i* ]]; then
+    mc cp s3backup/${S3_BUCKET}/${S3_PATH}/${LATEST_BACKUP} ${BACKUP_DIR}/${LATEST_BACKUP} &
+
+    CP_PID=$!
+    while kill -0 $CP_PID 2>/dev/null; do
+        sleep 1
+        echo "Current size: $(du -sh ${BACKUP_DIR}/${LATEST_BACKUP}* | cut -f1)"
+    done
+else
+    mc cp s3backup/${S3_BUCKET}/${S3_PATH}/${LATEST_BACKUP} ${BACKUP_DIR}/${LATEST_BACKUP}
+fi
 
 # If the backup extension is .enc, decrypt it
 if [ "${LATEST_BACKUP##*.}" == "enc" ]; then
@@ -87,7 +98,7 @@ while sleep 1; do printf "."; done &
 # Save the PID of the background job to a variable
 BG_JOB_PID=$!
 # Run the psql command and redirect its output to ${BACKUP_DIR}/${LATEST_BACKUP_BASE}.log
-psql -v ON_ERROR_STOP=1 -h ${GITEA_DATABASE_HOST} -p ${GITEA_DATABASE_PORT_NUMBER} -U ${GITEA_DATABASE_USERNAME} -d ${GITEA_DATABASE_NAME} -f ${TMP_DIR}/gitea-db.sql > ${BACKUP_DIR}/${LATEST_BACKUP_BASE}.log 2>&1
+psql -v ON_ERROR_STOP=1 -h ${GITEA_DATABASE_HOST} -p ${GITEA_DATABASE_PORT_NUMBER} -U ${GITEA_DATABASE_USERNAME} -d ${GITEA_DATABASE_NAME} -f ${TMP_DIR}/gitea-db.sql >${BACKUP_DIR}/${LATEST_BACKUP_BASE}.log 2>&1
 
 # Kill the background job
 kill $BG_JOB_PID
